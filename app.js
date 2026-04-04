@@ -1,10 +1,9 @@
-import express from "express";
-import contactRoutes from "./routes/contactRoutes.js";
-
+const express = require("express");
 const app = express();
+const contactRoutes =require("./routes/contactRoutes.js");
 
 app.use(express.json());
 
 app.use("/api/contact", contactRoutes);
 
-export default app;
+module.exports = app;
