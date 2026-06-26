@@ -1,41 +1,31 @@
-const nodeMailer = require('nodemailer');
-const user = process.env.user;
-const pass = process.env.pass;
+const nodemailer = require("nodemailer");
 
-const sendMail = async ( options )=>{``
-  
-    const transporter = await nodeMailer.createTransport({
-        host: process.env.EMAIL_HOST,
-        service: process.env.EMAIL_SERVICE,
-        port: 465,
+const sendEmail = async ({ email, subject, message, text, html }) => {
+  const mailUser = process.env.EMAIL_USER || process.env.user;
+  const mailPass = process.env.EMAIL_PASS || process.env.pass;
 
-        secure: true, // true for port 465, false for other ports
-        auth: {
-          user: "obusco4lyfe@gmail.com",
-          pass: "nugn xilt pwbv arse"
-        },
-        // tls: {
-        //     rejectUnauthorized: false, // Bypass SSL verification
-        //   }        
-      });
+  if (!mailUser || !mailPass) {
+    throw new Error("Missing email credentials in environment variables");
+  }
 
-      async function main() {
-        // send mail with defined transport object
-        const info = await transporter.sendMail({
-          from: `"Fred Foo 👻" <${user}>`, // sender address
-          to: options.email, // list of receivers
-          subject: options.subject, // Subject line
-          html: options.html, // html body
-        });
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: mailUser,
+      pass: mailPass,
+    },
+  });
 
-        console.log("Message sent: %s", info.messageId);
-      }
+  const mailOptions = {
+    from: mailUser,
+    to: email,
+    subject,
+    text: text || message,
+    html,
+  };
 
+  return transporter.sendMail(mailOptions);
+};
 
-      const mailOption = {
-        subject: options.subject, text:options.text, from:"obusco4lyfe@gmail.com", to: options.email, html:options.html
-      };
-      await transporter.sendMail(mailOption)
-
-}
-module.exports = sendMail;
+module.exports = sendEmail;
+module.exports.sendEmail = sendEmail;
